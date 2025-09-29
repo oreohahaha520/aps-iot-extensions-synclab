@@ -2,14 +2,15 @@
 FROM node:22-slim
 
 # 設定工作目錄
-WORKDIR /web/src/app
+WORKDIR /app
 
 # 安裝依賴（先複製 package.json 避免每次 build 都重跑）
 COPY package*.json ./
-RUN npm ci --only=production
+RUN npm ci --omit=dev
 
 
 # 切換成官方內建的 node 使用者
+RUN chown -R node:node /app
 USER node
 
 # 複製程式碼
@@ -20,4 +21,4 @@ EXPOSE 3000
 
 # 啟動程式
 # CMD ["npm", "run", "start"]
-CMD ["node", "server.js"]
+CMD ["node", "src/server.js"]

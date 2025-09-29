@@ -1,18 +1,15 @@
 services:
   web:
     build:
-      context: ./web/src          # 相對於 compose 檔
+      context: ./web        # 相對於 compose 檔
       dockerfile: Dockerfile
-    image: aps-iot-web
-    container_name: synlab_web
-    volumes:
-      - synlab_web_data:/usr/src/app/data  # 用 /data的資料夾來存放資料，避免 container 資料覆蓋
+    image: aps-iot-extensions-synclab:latest
+    container_name: web
+    tty: true
     ports:
       - "${PORT:-3000}:3000"
-    environment:
-      - APS_CLIENT_ID=="OY0NegZZfUJfD7EFdtu3AtQNMk7PWfr4"
-      - APS_CLIENT_SECRET="AQ6J2Z4KDxIrUgc3"
-      - APS_BUCKET="ncku_arch_synclab)2025"
+    env_file:                   
+      - ./.env
     restart: unless-stopped # 除非手動停止，否則異常停止會自動重啟 適合 server 類型的服務
 
   rtsp:
@@ -34,6 +31,6 @@ services:
     # 把 CLI 參數放在 command（對應到 ENTRYPOINT 後面的參數）
     command: ["--stream","rtsp://ip:port/stream-name","--yolo","person,dog,cat"]
 
-volumes:
-  synlab_web_data: {}
+# volumes:
+#    synclab_ws: {}
 
