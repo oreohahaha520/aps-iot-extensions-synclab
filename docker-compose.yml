@@ -1,10 +1,8 @@
 services:
   web:
-    build:
-      context: ./web        # 相對於 compose 檔
-      dockerfile: Dockerfile
-    image: aps-iot-extensions-synclab:latest
-    container_name: web
+    image: aps_web:latest
+    volumes:
+      - ./web:/app
     tty: true
     ports:
       - "${PORT:-3000}:3000"
