@@ -10,25 +10,28 @@ services:
       - ./.env
     restart: unless-stopped # 除非手動停止，否則異常停止會自動重啟 適合 server 類型的服務
 
-  rtsp:
+  mediamtx:
     image: bluenviron/mediamtx:latest
-    container_name: synlab-rtsp
     ports:
-      - "1935:1935"
-      - "8554:8554"
-    # volumes:
-      # - ./rtsp/mediamtx.yml:/mediamtx.yml:ro
+      - "8554:8554" # RTSP
+      - "8080:8080" # HTTP
 
-  yolocam1:
-    build: { context: ./yolo/src, dockerfile: Dockerfile }
+  cam1:
+    image: rtsp:latest
     depends_on:
-      - rtsp
+      - mediamtx
+    volumes:
+      - ./rtsp/src/cctv/:/app/cctv/
+    env_file:
+      - ./.env
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
       - NVIDIA_DRIVER_CAPABILITIES=compute,utility,video
-    # 把 CLI 參數放在 command（對應到 ENTRYPOINT 後面的參數）
-    command: ["--stream","rtsp://ip:port/stream-name","--yolo","person,dog,cat"]
+      - OPENCV_FFMPEG_CAPTURE_OPTIONS=rtsp_transport;tcp
+    working_dir: /app
+    # 執行 python3 程式並傳遞 CLI 參數
+    command: ["python3", "yolo-rtsp-security-cam.py", "--stream", "${STREAM_URL}"]
 
-# volumes:
+# volumes
 #    synclab_ws: {}
 
