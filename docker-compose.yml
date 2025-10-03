@@ -16,21 +16,34 @@ services:
       - "8554:8554" # RTSP
       - "8080:8080" # HTTP
 
-  cam1:
-    image: rtsp:latest
-    depends_on:
-      - mediamtx
+  # cam1:
+  #   image: rtsp:v_3
+  #   ports:
+  #     - "5000:5000" # Flask Web Server Port
+  #   # depends_on:
+  #   #   - mediamtx
+  #   volumes:
+  #     - ./rtsp/src/:/app/
+  #   env_file:
+  #     - ./.env
+  #   environment:
+  #     - NVIDIA_VISIBLE_DEVICES=all
+  #     - NVIDIA_DRIVER_CAPABILITIES=compute,utility,video
+  #     - OPENCV_FFMPEG_CAPTURE_OPTIONS=rtsp_transport;tcp
+  #   working_dir: /app
+  #   # 執行 python3 程式並傳遞 CLI 參數
+  #   command: 
+  #     - python3
+  #     - simple_web_stream.py
+  #     - --stream
+  #     - "rtsp://admin:cctv-8888@220.130.204.161:504/unicast/c3/s1/live"
+
+  rtsptoweb:
+    image: ghcr.io/deepch/rtsptoweb:latest
+    ports:
+      - "8083:8083" # Web Server Port
     volumes:
-      - ./rtsp/src/cctv/:/app/cctv/
-    env_file:
-      - ./.env
-    environment:
-      - NVIDIA_VISIBLE_DEVICES=all
-      - NVIDIA_DRIVER_CAPABILITIES=compute,utility,video
-      - OPENCV_FFMPEG_CAPTURE_OPTIONS=rtsp_transport;tcp
-    working_dir: /app
-    # 執行 python3 程式並傳遞 CLI 參數
-    command: ["python3", "yolo-rtsp-security-cam.py", "--stream", "${STREAM_URL}"]
+      - ./rtsptoweb/config.json:/config/config.json 
 
 # volumes
 #    synclab_ws: {}
