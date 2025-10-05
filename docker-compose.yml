@@ -44,6 +44,27 @@ services:
       - "8083:8083" # Web Server Port
     volumes:
       - ./rtsptoweb/config.json:/config/config.json 
+    networks: [ live_net ]
+
+    caddy:
+      image: caddy:alpine
+      container_name: live-proxy
+      ports:
+        - "80:80"
+        - "443:443"
+      volumes:
+        - ./Caddyfile:/etc/caddy/Caddyfile:ro
+        - caddy_data:/data
+        - caddy_config:/config
+      depends_on: [ rtsptoweb ]
+      networks: [ live_net ]
+
+  networks:
+    live_net:
+
+  volumes:
+    caddy_data:
+    caddy_config:
 # volumes
 #    synclab_ws: {}
 
