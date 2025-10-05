@@ -51,69 +51,140 @@ export class NewToolbar extends UIBaseExtension {
     addBtn('eco-button', 'Eco',
       'https://img.icons8.com/external-jumpicon-line-ayub-irawan/32/FFFFFF/external-eco-ecology-jumpicon-line-jumpicon-line-ayub-irawan-4.png',
       () => console.log('[Eco] clicked'));
-    addBtn('people-button', '人流',
-      'https://img.icons8.com/ios-filled/50/FFFFFF/crowd.png',
-      (event) => {
-        const displayViewer = document.getElementsByClassName('adsk-viewing-viewer')[0];
-        const rect = event.target.getBoundingClientRect();
+addBtn(
+  'people-button',
+  '人流',
+  'https://img.icons8.com/ios-filled/50/FFFFFF/crowd.png',
+  (event) => {
+    const displayViewer = document.getElementsByClassName('adsk-viewing-viewer')[0];
+    const btnRect = (event.currentTarget || event.target).getBoundingClientRect();
+    const viewerRect = displayViewer.getBoundingClientRect();
 
-        if (!this.peopleDOM) {
-          const events = ['People Detection', 'People Heatmap'];
-          const wrapper = document.createElement('div');
+    // 只注入一次基本樣式
+    if (!document.getElementById('people-drag-style')) {
+      const style = document.createElement('style');
+      style.id = 'people-drag-style';
+      style.textContent = `
+        .wrapper { position:absolute; z-index:9999;}
+        .title { display:inline-block; padding:6px 10px; cursor:move; user-select:none; -webkit-user-drag:none;
+                //  background:#1119; 
+                color:#fff; border-radius:8px;
+                font-weight: bold; }
+      `;
+      document.head.appendChild(style);
+    }
 
-          // --- top layer ---
-          const title = document.createElement('span');
-          wrapper.className = 'wrapper';
-          title.className = 'title';
-          title.innerText = 'CCTV Detection';
-          wrapper.appendChild(title);
-          // --- top layer ---
+    // viewer 當作拖曳邊界容器
+    if (!displayViewer.style.position) displayViewer.style.position = 'relative';
 
-          // --- second layer ---
-          const dropDownArea = document.createElement('div');
-          const counter = document.createElement('span');
-          dropDownArea.className = 'drop_down_area';
-          counter.className = 'counter';
-          counter.innerText = 'Number: 174';
+    // 拖曳工具：以 boundaryEl 邊界限制
+    function makeDraggable(box, grip, boundaryEl){
+      let sx=0, sy=0, sl=0, st=0;
+      const onDown = (e) => {
+        e.preventDefault();
+        sx = e.clientX; sy = e.clientY;
+        sl = parseFloat(box.style.left)||0;
+        st = parseFloat(box.style.top)||0;
+        grip.setPointerCapture?.(e.pointerId);
+        grip.addEventListener('pointermove', onMove);
+        grip.addEventListener('pointerup', onUp);
+        grip.addEventListener('pointercancel', onUp);
+      };
+      const onMove = (e) => {
+        const dx = e.clientX - sx;
+        const dy = e.clientY - sy;
+        let nl = sl + dx, nt = st + dy;
 
-          dropDownArea.appendChild(counter);
-          // --- second layer ---
-          const eventWrapper = document.createElement('div');
-          eventWrapper.className = 'event_wrapper';
-          for (let index in events) {
-            const currentEvent = events[index];
-            const eventDOM = document.createElement('div');
-            const nameDOM = document.createElement('span');
-            const displayDOM = document.createElement('div');
-            const IMG = document.createElement('img');
+        const bw = boundaryEl.clientWidth,  bh = boundaryEl.clientHeight;
+        const ww = box.offsetWidth,         wh = box.offsetHeight;
 
-            eventDOM.className = currentEvent;
-            displayDOM.className = 'display_img';
-            nameDOM.innerText = currentEvent;
+        // 邊界限制
+        nl = Math.min(Math.max(0, nl), Math.max(0, bw - ww));
+        nt = Math.min(Math.max(0, nt), Math.max(0, bh - wh));
 
-            eventDOM.appendChild(nameDOM);
-            displayDOM.appendChild(IMG);
-            eventDOM.appendChild(displayDOM);
-            eventWrapper.appendChild(eventDOM);
-          }
+        box.style.left = nl + 'px';
+        box.style.top  = nt + 'px';
+      };
+      const onUp = (e) => {
+        grip.releasePointerCapture?.(e.pointerId);
+        grip.removeEventListener('pointermove', onMove);
+        grip.removeEventListener('pointerup', onUp);
+        grip.removeEventListener('pointercancel', onUp);
+      };
+      grip.addEventListener('pointerdown', onDown);
+    }
 
-          wrapper.appendChild(dropDownArea);
-          wrapper.appendChild(eventWrapper);
-  
-          this.peopleDOM = wrapper;
-        }
+    // 生成 DOM（只建一次）
+    if (!this.peopleDOM) {
+      const events = ['People Detection', 'People Heatmap'];
 
-        this.peopleDOM.style.left = `${rect.left - 100}px`;
-        this.peopleDOM.style.top = `${rect.top - 490}px`; // 離按鈕一點距離
+      const wrapper = document.createElement('div');
+      wrapper.className = 'wrapper';
 
-        if (this.openPeopleButton) {
-          this.openPeopleButton = false;
-          displayViewer.removeChild(this.peopleDOM);
-        } else {
-          this.openPeopleButton = true;
-          displayViewer.appendChild(this.peopleDOM);
-        }
-      });
+      // top layer
+      const title = document.createElement('span');
+      title.className = 'title';
+      title.innerText = 'CCTV Detection';
+      wrapper.appendChild(title);
+
+      // second layer
+      const dropDownArea = document.createElement('div');
+      const counter = document.createElement('span');
+      dropDownArea.className = 'drop_down_area';
+      counter.className = 'counter';
+      counter.innerText = ' Number: 174 ';
+      dropDownArea.appendChild(counter);
+
+      // events
+      const eventWrapper = document.createElement('div');
+      eventWrapper.className = 'event_wrapper';
+      for (const currentEvent of events) {
+        const eventDOM = document.createElement('div');
+        const nameDOM = document.createElement('span');
+        const displayDOM = document.createElement('div');
+        const IMG = document.createElement('img');
+
+        eventDOM.className = currentEvent;
+        nameDOM.innerText = currentEvent;
+        displayDOM.className = 'display_img';
+
+        displayDOM.appendChild(IMG);
+        eventDOM.appendChild(nameDOM);
+        eventDOM.appendChild(displayDOM);
+        eventWrapper.appendChild(eventDOM);
+      }
+
+      wrapper.appendChild(dropDownArea);
+      wrapper.appendChild(eventWrapper);
+
+      // 初始座標：把按鈕的視窗座標換成 viewer 內部座標
+      const initLeft = (btnRect.left - viewerRect.left) - 100;
+      const initTop  = (btnRect.top  - viewerRect.top ) - 490;
+      wrapper.style.left = Math.max(0, initLeft) + 'px';
+      wrapper.style.top  = Math.max(0, initTop ) + 'px';
+
+      // 啟用拖曳：title 當把手、viewer 為邊界
+      makeDraggable(wrapper, title, displayViewer);
+
+      this.peopleDOM = wrapper;
+    } else {
+      // 若已建立，點按鈕時可選擇重新定位到按鈕附近（需要就保留，不需要可刪）
+      const newLeft = (btnRect.left - viewerRect.left) - 100;
+      const newTop  = (btnRect.top  - viewerRect.top ) - 490;
+      this.peopleDOM.style.left = Math.max(0, newLeft) + 'px';
+      this.peopleDOM.style.top  = Math.max(0, newTop ) + 'px';
+    }
+
+    // 顯示/隱藏
+    if (displayViewer.contains(this.peopleDOM)) {
+      displayViewer.removeChild(this.peopleDOM);
+      this.openPeopleButton = false;
+    } else {
+      displayViewer.appendChild(this.peopleDOM);
+      this.openPeopleButton = true;
+    }
+  }
+);
     addBtn('cctv-button', 'CCTV',
       'https://img.icons8.com/ios-filled/50/FFFFFF/private-wall-mount-camera--v2.png',
       () => console.log('[CCTV] clicked'));
