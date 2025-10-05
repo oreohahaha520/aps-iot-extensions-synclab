@@ -44,7 +44,6 @@ services:
       - "8083:8083" # Web Server Port
     volumes:
       - ./rtsptoweb/config.json:/config/config.json 
-
 # volumes
 #    synclab_ws: {}
 

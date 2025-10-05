@@ -15,10 +15,10 @@ export const SensorHeatmapsExtensionID = 'IoT.SensorHeatmaps';
 export const NewToolbarExtensionID = 'NewToolbar';  // 新增的 Toolbar Extension ID
 
 
-Autodesk.Viewing.theExtensionManager.registerExtension(SensorListExtensionID, SensorListExtension);
-Autodesk.Viewing.theExtensionManager.registerExtension(SensorDetailExtensionID, SensorDetailExtension);
-Autodesk.Viewing.theExtensionManager.registerExtension(SensorSpritesExtensionID, SensorSpritesExtension);
-Autodesk.Viewing.theExtensionManager.registerExtension(SensorHeatmapsExtensionID, SensorHeatmapsExtension);
+// Autodesk.Viewing.theExtensionManager.registerExtension(SensorListExtensionID, SensorListExtension);
+// Autodesk.Viewing.theExtensionManager.registerExtension(SensorDetailExtensionID, SensorDetailExtension);
+// Autodesk.Viewing.theExtensionManager.registerExtension(SensorSpritesExtensionID, SensorSpritesExtension);
+// Autodesk.Viewing.theExtensionManager.registerExtension(SensorHeatmapsExtensionID, SensorHeatmapsExtension);
 Autodesk.Viewing.theExtensionManager.registerExtension(NewToolbarExtensionID, NewToolbar); // 註冊新的 Toolbar Extension
 
 async function getAccessToken(callback) {

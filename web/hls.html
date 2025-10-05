@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="referrer" content="no-referrer">
+  <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet">
+</head>
+<body>
+  <video id="v" class="video-js" controls preload="auto" width="800" height="450" crossorigin="anonymous"></video>
+
+  <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
+  <script>
+    const src = "http://localhost:8083/stream/cam-174/channel/0/hls/live/index.m3u8";
+    const player = videojs('v');
+    player.src({src, type: 'application/x-mpegURL'});
+    player.play();
+  </script>
+</body>
+</html>

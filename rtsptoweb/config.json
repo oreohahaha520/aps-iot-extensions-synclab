@@ -1,7 +1,6 @@
 {
   "channel_defaults": {
-    "on_demand": true,
-    "audio": false
+    "on_demand": true
   },
   "server": {
     "debug": true,
@@ -18,27 +17,29 @@
     "https_key": "server.key",
     "https_port": ":443",
     "ice_credential": "",
-    "ice_servers": ["stun:stun.l.google.com:19302"],
+    "ice_servers": [
+      "stun:stun.l.google.com:19302"
+    ],
     "ice_username": "",
     "log_level": "debug",
     "rtsp_port": ":5541",
-    "token": { "backend": "http://127.0.0.1/test.php", "enable": false },
+    "token": {
+      "backend": "http://127.0.0.1/test.php",
+      "enable": false
+    },
     "webrtc_port_max": 0,
     "webrtc_port_min": 0
   },
   "streams": {
     "cam-174": {
-      "name": "cam-174",
       "channels": {
         "0": {
-          "name": "main",
-          "url": "rtsp://admin:cctv-8888@220.130.204.161:504/unicast/c3/s1/live",
           "on_demand": true,
-          "debug": true,
-          "audio": false,
-          "status": 0
+          "url": "rtsp://admin:cctv-8888@220.130.204.161:504/unicast/c3/s1/live"
         }
-      }
+      },
+      "name": "cam-174"
+      
     }
   }
 }
