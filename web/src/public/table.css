@@ -1,0 +1,35 @@
+.multi-table-panel {
+  background-color: #2b2b2b;
+  color: #fff;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.tab-header {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.tab-btn {
+  background: #444;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.tab-btn.active {
+  background: #00aaff;
+}
+
+.custom-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.custom-table th, .custom-table td {
+  border: 1px solid #555;
+  padding: 6px;
+  text-align: center;
+}

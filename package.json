@@ -1,5 +1,9 @@
 {
   "dependencies": {
-    "hls.js": "^1.6.13"
+    "datatables.net": "^2.3.4",
+    "datatables.net-dt": "^2.3.4",
+    "express": "^5.1.0",
+    "hls.js": "^1.6.13",
+    "jquery": "^3.7.1"
   }
 }
